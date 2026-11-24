@@ -1,0 +1,28 @@
+﻿:root {
+  --bg: #0e1311;
+  --text: #e8efea;
+  --muted: #8a968f;
+  --green: #4ade80;
+  --amber: #fbbf24;
+  --surface: #171d1a;
+  --surface-2: #1f2622;
+  --border: rgba(232, 239, 234, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  background: #060908;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }

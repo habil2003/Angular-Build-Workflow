@@ -1,0 +1,90 @@
+﻿<div class="page">
+  <div class="phone">
+    <header class="topbar">
+      <h1>Tuner</h1>
+      <button class="settings" aria-label="Toggle microphone" (click)="listening ? stopListening() : startListening()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path *ngIf="listening" d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+          <path *ngIf="listening" d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line *ngIf="listening" x1="12" y1="19" x2="12" y2="22"></line>
+          <path *ngIf="!listening" d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" opacity="0.4"></path>
+          <line *ngIf="!listening" x1="4" y1="4" x2="20" y2="20"></line>
+        </svg>
+      </button>
+    </header>
+
+    <div class="meta">
+      <div class="pill">Standard · E A D G B E</div>
+      <div class="listening" [class.error]="error"><span class="dot" [class.off]="!listening" [class.err]="error"></span>{{ error ? 'Mic error' : (listening ? 'Listening' : 'Off') }}</div>
+    </div>
+
+    <section class="gauge-wrap">
+      <svg class="gauge" viewBox="0 0 342 192" aria-label="Tuning gauge">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <path [attr.d]="arcPath" class="in-tune-arc" />
+
+        <g *ngFor="let tick of gauge.ticks">
+          <line
+            [attr.x1]="tickPos(tick, tick % 25 === 0 ? 18 : 10).x1"
+            [attr.y1]="tickPos(tick, tick % 25 === 0 ? 18 : 10).y1"
+            [attr.x2]="tickPos(tick, tick % 25 === 0 ? 18 : 10).x2"
+            [attr.y2]="tickPos(tick, tick % 25 === 0 ? 18 : 10).y2"
+            [class.major]="tick % 25 === 0"
+            class="tick"
+          />
+          <text
+            *ngIf="tick % 25 === 0"
+            [attr.x]="tickLabelPos(tick).x"
+            [attr.y]="tickLabelPos(tick).y"
+            class="tick-label"
+            text-anchor="middle"
+          >{{ tick > 0 ? '+' + tick : tick }}</text>
+        </g>
+
+        <g [attr.transform]="'rotate(' + needleAngle + ' ' + gauge.cx + ' ' + gauge.cy + ')'">
+          <polygon points="171,40 167,170 175,170" [attr.fill]="statusColor" class="needle" />
+          <circle cx="171" cy="170" r="9" class="pivot-outer" />
+          <circle cx="171" cy="170" r="4.5" [attr.fill]="statusColor" />
+        </g>
+      </svg>
+    </section>
+
+    <section class="reading">
+      <div class="note" [style.color]="hasSignal ? statusColor : 'var(--muted)'">
+        <span class="letter">{{ selected.note }}</span><span class="octave">{{ selected.octave }}</span>
+      </div>
+      <div class="freq">{{ frequencyLabel }}</div>
+      <div class="cents" [style.color]="hasSignal ? statusColor : 'var(--muted)'">{{ centsLabel }}</div>
+      <div class="status" [style.color]="error ? '#f87171' : (hasSignal ? statusColor : 'var(--muted)')">{{ statusText }}</div>
+    </section>
+
+    <section class="strings" aria-label="Strings">
+      <button
+        *ngFor="let s of strings; let i = index"
+        class="string-btn"
+        [class.selected]="i === selectedIndex"
+        (click)="selectString(i)"
+      >
+        <span class="string-note">{{ s.note }}</span>
+        <span class="string-num">{{ s.number }}</span>
+      </button>
+    </section>
+
+    <footer class="footer">
+      <div class="mode-switch" role="group" aria-label="Mode">
+        <button class="mode-btn" [class.active]="autoMode" (click)="toggleMode('auto')">Auto</button>
+        <button class="mode-btn" [class.active]="!autoMode" (click)="toggleMode('manual')">Manual</button>
+      </div>
+      <div class="a4">A4 = {{ a4 }} Hz</div>
+    </footer>
+  </div>
+</div>
